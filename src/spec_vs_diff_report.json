@@ -1,0 +1,139 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-06T08:53:47.283Z",
+  "summary": "The diff adds a new TanStack Router-based public site and /admin area with editors for content and projects, plus a new Motoko backend actor with content/project APIs and an access-control mixin. However, several BuildRequest specifics are missing or not verifiably implemented from the provided diff, and there are multiple added features/content not requested (profiles, blob storage, caffeine branding, unrelated default content).",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Public site content must match Parimal Steel Engineers requirements: services list includes the provided items; materials explicitly mention mild steel and stainless steel; clients list includes Techno Glaze, Shree Krishna Group, Raheja, Hiranandani, Kalpatru; contact shows “Andheri East, Mumbai” and phone/email placeholders; About includes company + owner name.",
+      "reason": "The backend default content shown is for a different company/location and does not include the required initial services, materials, clients, or contact values; About section uses content.companyDescription and Contact owner is hardcoded but address/phone/email come from backend content which defaults to Berlin/Germany values.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/site/ContactSection.tsx",
+        "frontend/src/components/site/AboutSection.tsx",
+        "frontend/src/components/site/ServicesSection.tsx",
+        "frontend/src/components/site/ClientsSection.tsx",
+        "frontend/src/components/site/MaterialsSection.tsx"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Edits persist across canister upgrades (stable storage).",
+      "reason": "The diff shows mutable variables (e.g., content, nextProjectId) and Maps for projects/profiles, but does not show use of stable variables or explicit preupgrade/postupgrade handling; persistence across upgrades is not evidenced.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Secure owner-only editing using Internet Identity on the frontend and enforcing authorization in the backend using an allowlist of admin principals (initially configured for a single owner admin).",
+      "reason": "While Internet Identity is present and the backend checks AccessControl.isAdmin for update methods, the diff does not show an explicit allowlist of admin principals configured for the owner; the frontend initializes access control using a secret token URL parameter, which is not part of the requested allowlist approach.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Backend exposes query method(s) to fetch all public site content (and project lists) and update methods for admin edits, with upgrade-safe storage.",
+      "reason": "The diff shows an admin-only updateContent method and project add/update beginnings, but the file is truncated before showing the public read/query APIs (e.g., getContent/getProjects) and full CRUD; upgrade-safe storage is also not evidenced.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/admin/ContentEditor.tsx",
+        "frontend/src/components/admin/ProjectsEditor.tsx"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "requirement": "Basic SEO metadata (document title and meta description) relevant to Parimal Steel Engineers and fabrication services in Mumbai.",
+      "reason": "No diff evidence shows setting document title or meta description (e.g., index.html, Helmet usage, or route-level head management).",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "Generated images exist under frontend/public/assets/generated (logo, hero background, service icons) and are referenced by the frontend.",
+      "reason": "The frontend references the logo and hero background paths, but the diff does not include the actual generated image files under frontend/public/assets/generated, and there is no evidence of the 6 service icons being added or used.",
+      "evidence": [
+        "frontend/src/components/site/SiteHeader.tsx",
+        "frontend/src/components/site/HeroSection.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "User profile system (get/save caller profile) gated by a #user permission.",
+      "reason": "The BuildRequest is for a company marketing site with owner-editable CMS; it does not request end-user profiles.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/auth/ProfileSetupModal.tsx"
+      ]
+    },
+    {
+      "description": "Blob storage integration and client logos/projects image upload via ExternalBlob, including upload progress UI.",
+      "reason": "REQ-6 allows optional images for projects, but the BuildRequest does not ask for a blob-storage subsystem/mixin or file upload UX; this is additional functionality beyond the stated requirements.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/admin/ProjectsEditor.tsx"
+      ]
+    },
+    {
+      "description": "Secret-token-based access control initialization via URL parameter (caffeineAdminToken).",
+      "reason": "REQ-4 specifies an allowlist of admin principals with Internet Identity; initializing admin permissions via a secret URL token is not requested.",
+      "evidence": [
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "Caffeine.ai attribution/footer branding.",
+      "reason": "Not requested in any requirement or acceptance criteria.",
+      "evidence": [
+        "frontend/src/components/site/Footer.tsx"
+      ]
+    },
+    {
+      "description": "Default website content for a different business/location (e.g., “Welcome to SCS Services”, Berlin, Germany, Europe).",
+      "reason": "The requested site is for “Parimal Steel Engineers” in Mumbai with specific contact/location/client/service details.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/admin/ContentEditor.tsx",
+    "frontend/src/components/admin/ProjectsEditor.tsx",
+    "frontend/src/components/auth/AccessDenied.tsx",
+    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/auth/ProfileSetupModal.tsx",
+    "frontend/src/components/site/AboutSection.tsx",
+    "frontend/src/components/site/ClientsSection.tsx",
+    "frontend/src/components/site/ContactSection.tsx",
+    "frontend/src/components/site/Footer.tsx",
+    "frontend/src/components/site/HeroSection.tsx",
+    "frontend/src/components/site/MaterialsSection.tsx",
+    "frontend/src/components/site/MetallicSurface.tsx",
+    "frontend/src/components/site/PortfolioSection.tsx",
+    "frontend/src/components/site/ProjectCard.tsx",
+    "frontend/src/components/site/ServicesSection.tsx",
+    "frontend/src/components/site/SiteHeader.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/Admin.tsx",
+    "frontend/src/pages/PublicSite.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

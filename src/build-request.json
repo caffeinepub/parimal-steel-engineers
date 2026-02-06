@@ -1,0 +1,178 @@
+{
+  "kind": "build_request",
+  "title": "Parimal Steel Engineers company website with owner-editable admin (CMS)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a public marketing website for the company “Parimal Steel Engineers” with core pages/sections: Home (hero + key message), Services (fabrication offerings), Materials (mild steel + stainless steel), Clients (list of client names provided), About (company + owner name), and Contact (location + contact details placeholders). All user-facing text must be in English.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a fully function completey free website",
+          "we are company name parimal steel engineers",
+          "we do fabrication work on big scale project like cabin structure, machinery structure, hand railing, benches, roofsheds, godown, voundary wall, changing room structure, gazebo, towerparking platform, canopy etc",
+          "we are located in andheri east mumbai owner name hiten parimal makwana. our clients are techno glaze, shree krishna group, raheja, hiranandani kalpatru etc"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Site has navigable sections/pages for Home, Services, Materials, Clients, About, Contact",
+        "Services section includes the provided service list (cabin structure, machinery structure, hand railing, benches, roof sheds, godown, boundary wall, changing room structure, gazebo, tower parking platform, canopy)",
+        "Materials section explicitly mentions mild steel and stainless steel",
+        "Clients section lists: Techno Glaze, Shree Krishna Group, Raheja, Hiranandani, Kalpatru",
+        "Contact section displays “Andheri East, Mumbai” and “Owner: Hiten Parimal Makwana” plus editable placeholders for phone/email (since none were provided)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Apply the requested brand styling across the entire UI: black base, dark yellow accents, and a metallic/industrial finish look and feel (typography, surfaces, dividers, buttons, and section backgrounds).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "colour choeesen should bhi black and dark yellow and metalic finish"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Primary background is black/dark tones with dark yellow used consistently for emphasis (CTAs, highlights, headings or borders)",
+        "UI includes a metallic/industrial visual treatment (e.g., brushed-metal style gradients/textures and subtle sheen) without reducing readability",
+        "Contrast meets basic readability standards for text on dark backgrounds"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement owner-only editing (CMS) within the website so the owner can update website content without code changes. Include an Admin area with sign-in, edit forms, and publish/save actions for: hero headline/subheadline, company description, services list, materials text, clients list, and contact details.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "with editing facity in the website by the owner"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin area exists and is accessible from the UI (e.g., /admin)",
+        "Editing forms cover: hero text, about/company text, services list items, materials text, clients list items, and contact fields",
+        "Changes saved in Admin are reflected on the public pages after reload",
+        "Edits persist across canister upgrades (stable storage)"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Secure the editing facility so only the owner can make changes by using Internet Identity authentication on the frontend and enforcing authorization in the Motoko backend using an allowlist of admin principals (initially configured for a single owner admin).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "editing facity in the website by the owner",
+          "owner name hiten parimal makwana"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Unauthenticated users cannot access write endpoints; backend rejects unauthorized updates",
+        "Authenticated non-admin principals cannot update content",
+        "Admin principal(s) can update content successfully",
+        "Frontend shows a clear sign-in state and access-denied state for non-admin users"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Create a simple backend content model and API for reading public site content and writing admin-managed content (CRUD where appropriate) while keeping all Motoko logic in the single main actor.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes query method(s) to fetch all public site content in one call (or a small set of calls)",
+        "Backend exposes update method(s) for admin edits (services list, clients list, hero/about/materials/contact)",
+        "Data is stored in stable variables (or another upgrade-safe approach) so updates persist"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add a Portfolio/Projects section suitable for showcasing large-scale fabrication work, with an initial structure that supports adding project entries (title, short description, optional images) via the owner Admin UI.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "fabrication work on big scale project like cabin structure, machinery structure..."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Public site includes a Portfolio/Projects section",
+        "Admin can add/edit/remove project entries with title and description",
+        "If images are not provided, the UI still looks complete and uses a clean placeholder treatment"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Ensure the site is responsive (mobile/desktop), fast to load, and includes basic SEO metadata (site title, description) relevant to Parimal Steel Engineers and fabrication services in Mumbai.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Layouts adapt cleanly to mobile and desktop breakpoints",
+        "No horizontal overflow on common viewport sizes",
+        "Document title and meta description are set and relevant to the business"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Add generated static brand assets and wire them into the UI from the frontend public assets directory.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated images exist under frontend/public/assets/generated and are referenced directly by the frontend",
+        "Header/logo area and hero section use the generated assets"
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
+    "Do not edit any frontend files under frontend/src/components/ui or other immutable paths listed in the system context; compose them instead.",
+    "Use English for any user-facing text."
+  ],
+  "nonGoals": [
+    "No third-party authentication providers other than Internet Identity.",
+    "No external database or third-party CMS integration.",
+    "No real-time chat, push notifications, or email/SMS sending integrations.",
+    "No embedded map/geolocation integration; show location as text only unless the user later provides a specific embed that fits platform constraints."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Company logo mark + wordmark with industrial/steel aesthetic in black/dark yellow/metallic (pse-logo.dim_512x512.png)",
+      "Wide hero background with abstract brushed metal texture and subtle industrial elements, predominantly black with dark yellow accents (pse-hero-bg.dim_1920x800.png)",
+      "Set of 6 minimal industrial-style service icons in matching theme (cabin/structure, machinery frame, railing, bench, roof shed, canopy) (pse-service-icons.dim_1024x1024.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

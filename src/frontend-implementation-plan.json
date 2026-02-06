@@ -1,0 +1,252 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Parimal Steel Engineers marketing site + owner-editable Admin CMS (frontend)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Build a public English marketing website with navigable sections/pages: Home, Services, Materials, Clients, About, Contact, using provided business details and placeholders where needed.",
+      "acceptanceCriteria": [
+        "Site has navigable sections/pages for Home, Services, Materials, Clients, About, Contact",
+        "Services section includes the provided service list (cabin structure, machinery structure, hand railing, benches, roof sheds, godown, boundary wall, changing room structure, gazebo, tower parking platform, canopy)",
+        "Materials section explicitly mentions mild steel and stainless steel",
+        "Clients section lists: Techno Glaze, Shree Krishna Group, Raheja, Hiranandani, Kalpatru",
+        "Contact section displays “Andheri East, Mumbai” and “Owner: Hiten Parimal Makwana” plus editable placeholders for phone/email (since none were provided)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the app shell and routing for public pages/sections (Home, Services, Materials, Clients, About, Contact) and wire navigation to them."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Ensure the new App component is used as the application root and routing is correctly mounted."
+        },
+        {
+          "path": "frontend/src/pages/PublicSite.tsx",
+          "operation": "create",
+          "description": "Implement the public marketing UI layout and sections, rendering content from the backend content read capability (getContent) and including the required business details and placeholders."
+        },
+        {
+          "path": "frontend/src/components/site/SiteHeader.tsx",
+          "operation": "create",
+          "description": "Create a responsive header with logo/brand area and navigation links to the required pages/sections."
+        },
+        {
+          "path": "frontend/src/components/site/Sections.tsx",
+          "operation": "create",
+          "description": "Create composable section components for Home, Services, Materials, Clients, About, Contact to keep the public page structured and maintainable."
+        },
+        {
+          "path": "frontend/src/hooks/useWebsiteContent.ts",
+          "operation": "create",
+          "description": "Add a React Query hook to fetch and cache public website content via the backend actor (getContent) for use across the public sections."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Apply black + dark yellow + metallic/industrial styling consistently across the UI with readable contrast.",
+      "acceptanceCriteria": [
+        "Primary background is black/dark tones with dark yellow used consistently for emphasis (CTAs, highlights, headings or borders)",
+        "UI includes a metallic/industrial visual treatment (e.g., brushed-metal style gradients/textures and subtle sheen) without reducing readability",
+        "Contrast meets basic readability standards for text on dark backgrounds"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Define global theme variables and base styles for the black/dark background, dark yellow accents, and metallic/industrial look while maintaining readable contrast."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend Tailwind theme tokens to support the brand palette (dark background, dark yellow accents) and reusable metallic/industrial surface styling."
+        },
+        {
+          "path": "frontend/src/components/site/MetallicSurface.tsx",
+          "operation": "create",
+          "description": "Create a reusable wrapper component for metallic/industrial surface treatment to keep styling consistent across sections."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement an owner-only Admin CMS area with sign-in, edit forms, and save/publish actions for all editable site content and projects, reflecting changes on public pages after reload.",
+      "acceptanceCriteria": [
+        "Admin area exists and is accessible from the UI (e.g., /admin)",
+        "Editing forms cover: hero text, about/company text, services list items, materials text, clients list items, and contact fields",
+        "Changes saved in Admin are reflected on the public pages after reload",
+        "Edits persist across canister upgrades (stable storage)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Admin.tsx",
+          "operation": "create",
+          "description": "Create the /admin page that provides sign-in controls, loads current content for editing, and allows saving updates back to the backend."
+        },
+        {
+          "path": "frontend/src/components/admin/ContentEditor.tsx",
+          "operation": "create",
+          "description": "Implement edit forms for hero headline/subheadline, company/about description, materials text, services list, clients list, and contact details; include save/publish action that calls the backend update capability (updateContent)."
+        },
+        {
+          "path": "frontend/src/components/admin/ProjectsEditor.tsx",
+          "operation": "create",
+          "description": "Implement Admin UI for managing Portfolio/Projects entries (add/edit/remove), including optional image support; uses backend project write capabilities and integrates placeholder UI when images are not provided."
+        },
+        {
+          "path": "frontend/src/hooks/useAdminContent.ts",
+          "operation": "create",
+          "description": "Add hooks/mutations for admin-managed content editing: fetch current content (getContent) and save updates (updateContent), with cache invalidation so public pages reflect changes after reload."
+        },
+        {
+          "path": "frontend/src/hooks/useProjects.ts",
+          "operation": "create",
+          "description": "Add hooks for reading projects (getProjects) and admin mutations for add/update/delete (addProject/updateProject/deleteProject), including handling of optional images."
+        },
+        {
+          "path": "frontend/src/components/site/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Wire an Admin link/button into the public UI navigation to make the Admin area discoverable (e.g., link to /admin)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register and wire the /admin route to the Admin page so it is navigable."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Secure editing via Internet Identity sign-in and admin authorization checks, showing clear signed-in and access-denied states.",
+      "acceptanceCriteria": [
+        "Unauthenticated users cannot access write endpoints; backend rejects unauthorized updates",
+        "Authenticated non-admin principals cannot update content",
+        "Admin principal(s) can update content successfully",
+        "Frontend shows a clear sign-in state and access-denied state for non-admin users"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Create a login/logout button using the Internet Identity hook and clear cached queries on logout. Use the authorization component guidance for auth flow; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useAuthz.ts",
+          "operation": "create",
+          "description": "Add a small authz helper hook that queries the backend for caller role/admin status (e.g., isCallerAdmin/getCallerUserRole) to guard Admin UI. Use the authorization component guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/AccessDenied.tsx",
+          "operation": "create",
+          "description": "Create a clear access-denied screen/state to show when a signed-in user is not an admin."
+        },
+        {
+          "path": "frontend/src/components/auth/ProfileSetupModal.tsx",
+          "operation": "create",
+          "description": "Implement first-login profile setup (ask for name, save via saveCallerUserProfile, avoid modal flash). Use the authorization component guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Admin.tsx",
+          "operation": "modify",
+          "description": "Require Internet Identity sign-in for Admin, display sign-in state, block editing UI unless admin, and handle backend authorization failures with user-friendly messaging. Use the authorization component guidance; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add a public Portfolio/Projects section and Admin management UI for project entries (title, description, optional images) with complete placeholder treatment when images are absent.",
+      "acceptanceCriteria": [
+        "Public site includes a Portfolio/Projects section",
+        "Admin can add/edit/remove project entries with title and description",
+        "If images are not provided, the UI still looks complete and uses a clean placeholder treatment"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/site/PortfolioSection.tsx",
+          "operation": "create",
+          "description": "Create a public Portfolio/Projects section that lists projects from the backend (getProjects), supports optional images, and shows polished placeholders when images are missing."
+        },
+        {
+          "path": "frontend/src/pages/PublicSite.tsx",
+          "operation": "modify",
+          "description": "Wire the Portfolio/Projects section into the public site layout so it is visible and navigable."
+        },
+        {
+          "path": "frontend/src/components/admin/ProjectsEditor.tsx",
+          "operation": "modify",
+          "description": "Add UI for optional project images using ExternalBlob; support adding/removing images and show upload/progress states. Use the blob-storage component capability for image/blob handling; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/site/ProjectCard.tsx",
+          "operation": "create",
+          "description": "Create a reusable project card component to render title/description and optional image previews using direct URLs when available. Use the blob-storage component capability for rendering blob-hosted images; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Ensure responsive performance-minded UI and basic SEO metadata (title + description) relevant to Parimal Steel Engineers fabrication services in Mumbai.",
+      "acceptanceCriteria": [
+        "Layouts adapt cleanly to mobile and desktop breakpoints",
+        "No horizontal overflow on common viewport sizes",
+        "Document title and meta description are set and relevant to the business"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Add/update basic SEO metadata including a relevant meta description (fabrication services in Mumbai) and ensure the document title matches the brand."
+        },
+        {
+          "path": "frontend/src/components/site/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Ensure the header/nav is responsive (mobile menu behavior) and does not cause horizontal overflow."
+        },
+        {
+          "path": "frontend/src/pages/PublicSite.tsx",
+          "operation": "modify",
+          "description": "Ensure all sections are responsive across breakpoints and avoid horizontal overflow; use performance-minded rendering for lists and images."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Add generated static brand assets under the public assets directory and reference them in the header/logo area and hero section.",
+      "acceptanceCriteria": [
+        "Generated images exist under frontend/public/assets/generated and are referenced directly by the frontend",
+        "Header/logo area and hero section use the generated assets"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/pse-logo.dim_512x512.png",
+          "operation": "create",
+          "description": "Add the generated company logo mark + wordmark asset to the public generated assets directory so the UI can reference it."
+        },
+        {
+          "path": "frontend/public/assets/generated/pse-hero-bg.dim_1920x800.png",
+          "operation": "create",
+          "description": "Add the generated hero background asset to the public generated assets directory so the UI can reference it."
+        },
+        {
+          "path": "frontend/public/assets/generated/pse-service-icons.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated service icons set asset to the public generated assets directory so the UI can reference it."
+        },
+        {
+          "path": "frontend/src/components/site/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Wire the generated logo image at frontend/public/assets/generated/pse-logo.dim_512x512.png into the header/brand area."
+        },
+        {
+          "path": "frontend/src/components/site/Sections.tsx",
+          "operation": "modify",
+          "description": "Wire the generated hero background image at frontend/public/assets/generated/pse-hero-bg.dim_1920x800.png into the Home hero section and reference frontend/public/assets/generated/pse-service-icons.dim_1024x1024.png for service iconography where appropriate."
+        }
+      ]
+    }
+  ]
+}
